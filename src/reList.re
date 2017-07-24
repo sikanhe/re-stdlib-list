@@ -9,22 +9,22 @@ let rec some pred =>
   | [hd, ...tail] => (pred hd) || (some pred tail);
 
 let reverse list => {
-  let rec doReverse acc =>
+  let rec aux acc =>
     fun
     | [] => acc
-    | [hd, ...tail] => doReverse [hd, ...acc] tail;
+    | [hd, ...tail] => aux [hd, ...acc] tail;
 
-  doReverse [] list
+  aux [] list
 };
 
 let append l1 l2 => {
-  let rec doAppend l1 l2 =>
+  let rec aux l1 l2 =>
     switch l1 {
     | [] => l2
-    | [hd, ...tail] => doAppend tail [hd, ...l2]
+    | [hd, ...tail] => aux tail [hd, ...l2]
     };
 
-  doAppend (reverse l1) l2;
+  aux (reverse l1) l2;
 };
 
 let rec each f =>
@@ -61,16 +61,16 @@ let rec duplicate n x =>
   };
 
 let flatten list => {
-  let rec doFlatten acc =>
+  let rec aux acc =>
     fun
     | [] =>
       acc
     | [[], ...tailOuter] =>
-      doFlatten acc tailOuter
+      aux acc tailOuter
     | [[hd, ...tailInner], ...tailOuter] =>
-      doFlatten [hd, ...acc] [tailInner, ...tailOuter];
+      aux [hd, ...acc] [tailInner, ...tailOuter];
 
-  reverse(doFlatten [] list);
+  reverse(aux [] list);
 };
 
 let rec map f =>
@@ -89,19 +89,19 @@ let foldRight f acc list =>
 let wrap = fun item => [item];
 
 let length list => {
-  let rec doLength acc =>
+  let rec aux acc =>
     fun
     | [] => acc
-    | [_hd, ...tail] => doLength (acc + 1) tail;
+    | [_hd, ...tail] => aux (acc + 1) tail;
 
-  doLength 0 list;
+  aux 0 list;
 };
 
 let sum list => {
-  let rec doSum acc =>
+  let rec aux acc =>
     fun
     | [] => acc
-    | [hd, ...tail] => doSum (hd + acc) tail;
+    | [hd, ...tail] => aux (hd + acc) tail;
 
-  doSum 0 list
+  aux 0 list
 };
