@@ -15,6 +15,23 @@ describe "List.all" (fun () => {
     expect (ReList.all (fun x => x == 1) [1, 2, 1]) |> toBe false);
 });
 
+describe "List.each" (fun () => {
+  test "should iterate through a list and apply the function to each item" (fun () => {
+    let list = ["a", "b", "c"];
+    let abc = ref "";
+    ReList.each (fun x => abc := !abc ^ x) list;
+    expect !abc |> toEqual "abc";
+  });
+});
+
+describe "List.find" (fun () => {
+  test "should find an item from a list" (fun () =>
+    expect (ReList.find (fun x => x == 3) [1, 2, 3, 4]) |> toBe (Some 3));
+
+  test "should return None when item is not found" (fun () =>
+    expect (ReList.find (fun x => x == 0) [1, 2, 3, 4]) |> toBe None);
+});
+
 describe "List.some" (fun () => {
   test "should return true when some are true" (fun () =>
     expect (ReList.some (fun x => x == 1) [1, 2, 1]) |> toBe true);

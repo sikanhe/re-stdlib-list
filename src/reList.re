@@ -27,6 +27,17 @@ let append l1 l2 => {
   doAppend (reverse l1) l2;
 };
 
+let rec each f =>
+  fun
+  | [] => ()
+  | [hd, ...tail] => {f hd; each f tail};
+
+let rec find pred =>
+  fun
+  | [] => None
+  | [hd, ..._tail] when pred hd => Some hd
+  | [_hd, ...tail] => find pred tail ;
+
 let rec filter pred =>
   fun
   | [] => []
