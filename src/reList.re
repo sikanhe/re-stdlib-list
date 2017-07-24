@@ -3,6 +3,10 @@ let rec all pred =>
   | [] => true
   | [hd, ...tail] => (pred hd) && (all pred tail);
 
+let rec some pred =>
+  fun
+  | [] => false
+  | [hd, ...tail] => (pred hd) || (some pred tail);
 
 let reverse list => {
   let rec doReverse acc =>
@@ -23,40 +27,27 @@ let append l1 l2 => {
   doAppend (reverse l1) l2;
 };
 
-let filter pred list => {
-  let rec doFilter acc =>
-    fun
-    | [] =>
-      acc
-    | [hd, ...tail] when (pred hd) =>
-      doFilter [hd, ...acc] tail
-    | [_hd, ...tail] =>
-      doFilter acc tail;
+let rec filter pred =>
+  fun
+  | [] => []
+  | [hd, ...tail] when (pred hd) =>
+    [hd, ...(filter pred tail)]
+  | [_hd, ...tail] =>
+    filter pred tail;
 
-  doFilter [] list;
-};
+let rec reject pred =>
+  fun
+  | [] => []
+  | [hd, ...tail] when (pred hd) =>
+    reject pred tail
+  | [hd, ...tail] =>
+    [hd, ...(reject pred tail)];
 
-let reject pred list => {
-  let rec doReject acc =>
-    fun
-    | [] => acc
-    | [hd, ...tail] when not (pred hd) =>
-      doReject [hd, ...acc] tail
-    | [_hd, ...tail] =>
-      doReject acc tail;
-
-  doReject [] list;
-};
-
-
-let duplicate n x => {
-  let rec doDuplicate acc =>
-    fun
-    | n when n <= 0 => acc
-    | n => doDuplicate [x, ...acc] (n - 1);
-
-  doDuplicate [] n;
-};
+let rec duplicate n x =>
+  switch n {
+    | n when n <= 0 => []
+    | n => [x, ...(duplicate (n - 1) x)];
+  };
 
 let flatten list => {
   let rec doFlatten acc =>
@@ -68,17 +59,13 @@ let flatten list => {
     | [[hd, ...tailInner], ...tailOuter] =>
       doFlatten [hd, ...acc] [tailInner, ...tailOuter];
 
-  doFlatten [] list;
+  reverse(doFlatten [] list);
 };
 
-let map f list => {
-  let rec doMap acc =>
-    fun
-    | [] => acc
-    | [hd, ...tail] => doMap [(f hd), ...acc] tail;
-
-  doMap [] list;
-};
+let rec map f =>
+  fun
+  | [] => []
+  | [hd, ...tail] => [(f hd), ...(map f tail)];
 
 let rec foldLeft f acc =>
   fun
