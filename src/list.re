@@ -1,4 +1,4 @@
-let rec all pred =>fun
+let rec all pred => fun
 | [] => true
 | [hd, ...tail] => (pred hd) && (all pred tail);
 
