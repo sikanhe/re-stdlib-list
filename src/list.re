@@ -1,117 +1,92 @@
-let rec doReverse list acc =>
-  switch list {
-  | [] => []
-  | [hd, ...tail] => doReverse tail [hd, ...acc]
-  };
-let reverse list => doReverse list [];
+let rec all pred =>fun
+| [] => true
+| [hd, ...tail] => (pred hd) && (all pred tail);
 
-let rec doAppend list1 list2 =>
-  switch list1 {
-  | [] => list2
-  | [hd, ...tail] => doAppend tail [hd, ...list2]
-  };
-let append list1 list2 =>
-  doAppend (reverse list1) list2;
 
-let rec filter f item list =>
-  switch list {
-  | [] => []
-  | [hd, ...tail] when f(hd) =>
-    [hd, ...(filter f item tail)]
-  | [_hd, ...tail] =>
-    filter f item tail
-  };
+let reverse list => {
+  let rec doReverse acc => fun
+  | [] => acc
+  | [hd, ...tail] => doReverse [hd, ...acc] tail;
 
-let rec reject f item list =>
-  switch list {
-  | [] => []
-  | [hd, ...tail] when f(hd) =>
-    reject f item tail
-  | [hd, ...tail] =>
-    [hd, ...(reject f item tail)]
-  };
+  doReverse [] list
+};
 
-let rec duplicate item count =>
-  switch count {
-  | n when n <= 0 => []
-  | n => [item, ...duplicate item (n - 1)]
-  };
+let append l1 l2 => {
+  let rec doAppend l1 l2 =>
+    switch l1 {
+    | [] => l2
+    | [hd, ...tail] => doAppend tail [hd, ...l2]
+    };
 
-let rec doFlatten list acc =>
-  switch list {
+  doAppend (reverse l1) l2;
+};
+
+let rec filter pred => fun
+| [] => []
+| [hd, ...tail] when (pred hd) =>
+  [hd, ...(filter pred tail)]
+| [_hd, ...tail] =>
+  filter pred tail;
+
+let rec reject pred  => fun
+| [] => []
+| [hd, ...tail] when (pred hd) =>
+  reject pred tail
+| [hd, ...tail] =>
+  [hd, ...(reject pred tail)];
+
+let duplicate n x => {
+  let rec doDuplicate acc n =>
+    n <= 0
+      ? acc
+      : doDuplicate [x, ...acc] (n - 1);
+
+  doDuplicate [] n;
+};
+
+let flatten list => {
+  let rec doFlatten acc => fun
   | [] =>
     acc
   | [[], ...tailOuter] =>
-    doFlatten tailOuter acc
+    doFlatten acc tailOuter
   | [[hd, ...tailInner], ...tailOuter] =>
-    doFlatten [tailInner, ...tailOuter] [hd, ...acc]
-  };
+    doFlatten [hd, ...acc] [tailInner, ...tailOuter];
 
-let rec map f list =>
-  switch list {
-  | [] => []
-  | [hd, ...tail] => [(f hd), ...(map f tail)]
-  };
+  doFlatten [] list;
+};
 
-let flatten list => doFlatten list [];
+let map f list => {
+  let rec doMap acc list =>
+    switch list {
+      | [] => acc
+      | [hd, ...tail] => doMap [(f hd), ...acc] tail
+    };
 
-let rec foldl f acc list =>
-  switch list {
-  | [] => acc
-  | [hd, ...tail] => foldl f (f acc hd) tail
-  };
+  doMap [] list;
+};
 
-let foldr f acc list =>
-  foldl f acc (reverse list);
+let rec foldLeft f acc => fun
+| [] => acc
+| [hd, ...tail] => foldLeft f (f acc hd) tail;
+
+let foldRight f acc list =>
+  foldLeft f acc (reverse list);
 
 let wrap = fun item => [item];
 
-let rec doLength acc list =>
-  switch list {
+let length list => {
+  let rec doLength acc => fun
   | [] => acc
-  | [_hd, ...tail] => doLength (acc + 1) tail
-  };
+  | [_hd, ...tail] => doLength (acc + 1) tail;
 
-let length list => doLength 0 list;
+  doLength 0 list;
+};
 
-let rec insertAt index item list =>
-  switch (list, index) {
-  | (list, index) when index < 0 =>
-    insertAt item ((length list) + index) list
-  | ([], _index) =>
-    [item]
-  | (list, 0)  =>
-    [item, ...list]
-  | ([hd, ...tail], index) =>
-    [hd, ...(insertAt item index tail)]
-  };
+let sum list => {
+  let rec doSum acc => fun
+  | [] => acc
+  | [hd, ...tail] => doSum (hd + acc) tail;
 
-let rec updateAt f index list =>
-  switch (list, index) {
-  | ([], _index) => []
-  | (list, index) when index < 0 =>
-    updateAt f ((length list) + index) list
-  | ([hd, ...tail], 0) =>
-    [(f hd), ...tail]
-  | (list, index) => updateAt f (index - 1) list
-  };
-
-let rec popAt ::default=? list index =>
-  switch (list, index) {
-  | ([], _index) => (default, [])
-  | (list, index) when index < 0 =>
-    popAt list ((length list) + index) ::?default
-  | ([hd, ...tail], 0) => (Some hd, tail)
-  | (list, index) => popAt list (index - 1) ::?default
-  };
-
-let rec replaceAt newItem index list =>
-  switch (list, index) {
-  | ([], _index) => []
-  | (list, index) when index < 0 =>
-    replaceAt newItem ((length list) + index) list
-  | ([_replaced, ...tail], 0) =>
-    [newItem, ...tail]
-  | (list, index) =>
-    replaceAt newItem (index - 1) list
-  };
+  doSum 0 list
+};
