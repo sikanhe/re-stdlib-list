@@ -44,6 +44,11 @@ describe "List.reverse" (fun () => {
     expect (ReList.reverse  [1, 2, 3]) |> toEqual [3, 2, 1]);
 });
 
+describe "List.delete" (fun () => {
+  test "should delete the first occurance of an item in a list" (fun () =>
+    expect (ReList.delete 2 [1, 2, 2, 3]) |> toEqual [1, 2, 3]);
+});
+
 describe "List.filter" (fun () => {
   test "should filter a list by its predicate" (fun () =>
     expect (ReList.filter (fun x => x > 1)  [1, 2, 3, 4]) |> toEqual [2, 3, 4]);

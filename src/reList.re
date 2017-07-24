@@ -27,6 +27,12 @@ let append l1 l2 => {
   aux (reverse l1) l2;
 };
 
+let rec delete x =>
+  fun
+  | [] => []
+  | [hd, ...tail] when hd === x => tail
+  | list => delete x list;
+
 let rec each f =>
   fun
   | [] => ()
