@@ -21,25 +21,33 @@ let append l1 l2 => {
   doAppend (reverse l1) l2;
 };
 
-let rec filter pred => fun
-| [] => []
-| [hd, ...tail] when (pred hd) =>
-  [hd, ...(filter pred tail)]
-| [_hd, ...tail] =>
-  filter pred tail;
+let filter pred list => {
+  let rec doFilter acc => fun
+  | [] => acc
+  | [hd, ...tail] when (pred hd) =>
+    doFilter [hd, ...acc] tail
+  | [_hd, ...tail] =>
+    doFilter acc tail;
 
-let rec reject pred  => fun
-| [] => []
-| [hd, ...tail] when (pred hd) =>
-  reject pred tail
-| [hd, ...tail] =>
-  [hd, ...(reject pred tail)];
+  doFilter [] list;
+};
+
+let reject pred list => {
+  let rec doReject acc => fun
+  | [] => acc
+  | [hd, ...tail] when not (pred hd) =>
+    doReject [hd, ...acc] tail
+  | [_hd, ...tail] =>
+    doReject acc tail;
+
+  doReject [] list;
+};
+
 
 let duplicate n x => {
-  let rec doDuplicate acc n =>
-    n <= 0
-      ? acc
-      : doDuplicate [x, ...acc] (n - 1);
+  let rec doDuplicate acc => fun
+  | n when n <= 0 => acc
+  | n => doDuplicate [x, ...acc] (n - 1);
 
   doDuplicate [] n;
 };
